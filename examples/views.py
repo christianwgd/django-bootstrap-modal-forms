@@ -1,7 +1,10 @@
+from django.contrib import messages
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views import generic
+from django.db import models
 
 from bootstrap_modal_forms.generic import (
     BSModalLoginView,
@@ -71,6 +74,17 @@ class BookDeleteView(BSModalDeleteView):
     template_name = 'examples/delete_book.html'
     success_message = 'Success: Book was deleted.'
     success_url = reverse_lazy('index')
+
+    def post(self, request, *args, **kwargs):
+        try:
+            response = super().post(request, *args, **kwargs)
+        except models.ProtectedError:
+            messages.error(
+                self.request,
+                'Cannot delete book due to existing reference'
+            )
+            return redirect(reverse_lazy('index'))
+        return response
 
 
 class SignUpView(BSModalCreateView):

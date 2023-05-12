@@ -18,3 +18,8 @@ class Book(models.Model):
     book_type = models.PositiveSmallIntegerField(choices=BOOK_TYPES)
 
     timestamp = models.DateField(auto_now_add=True, auto_now=False)
+
+
+class Reader(models.Model):
+    name = models.CharField(max_length=50)
+    book = models.ForeignKey(Book, on_delete=models.PROTECT)
